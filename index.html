@@ -1,4 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚽ Penalty Shootout Challenge</title>
+    <link rel="stylesheet" href="style.css">
+</head>
 <body>
+
+<!-- FIFA 26 Nation Flags Ticker -->
+<div class="flag-ticker-wrap">
+    <div class="flag-ticker" id="flag-ticker"></div>
+</div>
 
 <div class="container">
 
@@ -7,158 +20,109 @@
 
         <h1>⚽ Penalty Shootout Challenge</h1>
 
-        <input
-            id="player-name"
-            placeholder="Player Name"
-        >
+        <input id="player-name" placeholder="Your Name" />
 
-        <input
-            id="player-a"
-            placeholder="Player A Name"
-            class="hidden"
-        >
-
-        <input
-            id="player-b"
-            placeholder="Player B Name"
-            class="hidden"
-        >
+        <input id="player-a" placeholder="Player A Name" class="hidden" />
+        <input id="player-b" placeholder="Player B Name" class="hidden" />
 
         <h3>Game Mode</h3>
 
-        <button id="single-mode-btn">
-            Single Player
-        </button>
+        <div class="mode-buttons">
+            <button id="single-mode-btn" class="mode-btn active">⚽ Single Player</button>
+            <button id="duel-mode-btn" class="mode-btn">🆚 Two Player Duel</button>
+        </div>
 
-        <button id="duel-mode-btn">
-            Two Player Duel
-        </button>
-
-        <h3>Difficulty</h3>
+        <h3>Difficulty <span id="difficulty-hint" class="hint">(affects AI reaction)</span></h3>
 
         <select id="difficulty">
-            <option value="easy">Easy</option>
-            <option value="medium">Medium</option>
-            <option value="hard">Hard</option>
+            <option value="easy">🟢 Easy — AI guesses randomly</option>
+            <option value="medium" selected>🟡 Medium — AI reads patterns slightly</option>
+            <option value="hard">🔴 Hard — AI tries to outsmart you</option>
         </select>
 
-        <button id="start-btn">
-            Start Match
-        </button>
+        <button id="start-btn">🚀 Start Match</button>
 
     </section>
 
     <!-- GAME -->
-    <section
-        id="game-screen"
-        class="hidden"
-    >
-
-        <h2 id="role-display"></h2>
+    <section id="game-screen" class="hidden">
 
         <div class="scoreboard">
-
             <div>
-                <h3>Player A</h3>
+                <h3 id="label-a">Player A</h3>
                 <span id="score-a">0</span>
             </div>
-
-            <div>
-                <h3>Timer</h3>
+            <div class="timer-block">
+                <h3>⏱ Time</h3>
                 <span id="timer">5</span>
             </div>
-
             <div>
-                <h3>Player B</h3>
+                <h3 id="label-b">Player B</h3>
                 <span id="score-b">0</span>
             </div>
+        </div>
 
+        <div class="info-bar">
+            <span id="role-display"></span>
+            <span id="shots-remaining"></span>
         </div>
 
         <div class="field">
-
+            <div class="goal-post"></div>
             <div id="goalkeeper">🧤</div>
-
             <div id="ball">⚽</div>
-
         </div>
 
-        <h2 id="message">
-            Take Your Shot
-        </h2>
+        <h2 id="message">Take Your Shot!</h2>
 
         <div class="buttons">
-
-            <button id="left-btn">
-                LEFT
-            </button>
-
-            <button id="center-btn">
-                CENTER
-            </button>
-
-            <button id="right-btn">
-                RIGHT
-            </button>
-
+            <button id="left-btn">⬅ LEFT</button>
+            <button id="center-btn">⬆ CENTRE</button>
+            <button id="right-btn">RIGHT ➡</button>
         </div>
 
     </section>
 
-    <!-- PASS DEVICE -->
-    <section
-        id="pass-screen"
-        class="hidden"
-    >
-
-        <h1>
-            Pass Device
-        </h1>
-
-        <h2 id="pass-message"></h2>
-
-        <button id="continue-btn">
-            Continue
-        </button>
-
+    <!-- PASS DEVICE (Duel only) -->
+    <section id="pass-screen" class="hidden">
+        <div class="pass-content">
+            <div class="pass-icon">📱</div>
+            <h1>Pass the Device</h1>
+            <h2 id="pass-message"></h2>
+            <p class="pass-note">The previous player's choice has been hidden.</p>
+            <button id="continue-btn">I'm Ready — Continue</button>
+        </div>
     </section>
 
     <!-- RESULT -->
-    <section
-        id="result-screen"
-        class="hidden"
-    >
-
+    <section id="result-screen" class="hidden">
+        <div class="result-animation" id="result-animation"></div>
         <h1 id="result-title"></h1>
-
         <p id="result-details"></p>
-
-        <button id="next-btn">
-            Next
-        </button>
-
+        <div class="result-dirs">
+            <div>
+                <span class="dir-label">Ball went</span>
+                <span id="shot-dir-display" class="dir-badge"></span>
+            </div>
+            <div>
+                <span class="dir-label">Keeper dove</span>
+                <span id="keep-dir-display" class="dir-badge"></span>
+            </div>
+        </div>
+        <button id="next-btn">Next →</button>
     </section>
 
     <!-- FINAL -->
-    <section
-        id="final-screen"
-        class="hidden"
-    >
-
-        <h1>
-            Match Complete
-        </h1>
-
+    <section id="final-screen" class="hidden">
+        <h1>Match Complete 🏁</h1>
         <h2 id="winner-text"></h2>
-
-        <button id="restart-btn">
-            Play Again
-        </button>
-
+        <div class="final-scores" id="final-scores"></div>
+        <div id="rating-block" class="rating-block hidden"></div>
+        <button id="restart-btn">🔄 Play Again</button>
     </section>
 
 </div>
 
 <script src="script.js"></script>
-
 </body>
+</html>
