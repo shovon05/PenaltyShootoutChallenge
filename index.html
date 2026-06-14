@@ -1,208 +1,164 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penalty Shootout Challenge</title>
-
-    <link rel="stylesheet" href="style.css">
-</head>
 <body>
 
-    <div class="container">
+<div class="container">
 
-        <!-- MAIN MENU -->
-        <div id="start-screen">
+    <!-- MENU -->
+    <section id="menu-screen">
 
-            <h1>⚽ Penalty Shootout Challenge</h1>
+        <h1>⚽ Penalty Shootout Challenge</h1>
 
-            <p class="subtitle">
-                Test your penalty-taking skills and become the ultimate striker.
-            </p>
+        <input
+            id="player-name"
+            placeholder="Player Name"
+        >
 
-            <div class="menu-section">
+        <input
+            id="player-a"
+            placeholder="Player A Name"
+            class="hidden"
+        >
 
-                <label for="player-name">
-                    Player Name
-                </label>
+        <input
+            id="player-b"
+            placeholder="Player B Name"
+            class="hidden"
+        >
 
-                <input
-                    type="text"
-                    id="player-name"
-                    placeholder="Enter your name"
-                    maxlength="20"
-                >
+        <h3>Game Mode</h3>
 
+        <button id="single-mode-btn">
+            Single Player
+        </button>
+
+        <button id="duel-mode-btn">
+            Two Player Duel
+        </button>
+
+        <h3>Difficulty</h3>
+
+        <select id="difficulty">
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+        </select>
+
+        <button id="start-btn">
+            Start Match
+        </button>
+
+    </section>
+
+    <!-- GAME -->
+    <section
+        id="game-screen"
+        class="hidden"
+    >
+
+        <h2 id="role-display"></h2>
+
+        <div class="scoreboard">
+
+            <div>
+                <h3>Player A</h3>
+                <span id="score-a">0</span>
             </div>
 
-            <div class="menu-section">
-
-                <h3>Game Mode</h3>
-
-                <label class="radio-option">
-                    <input
-                        type="radio"
-                        name="mode"
-                        value="single"
-                        checked
-                    >
-                    Single Player
-                </label>
-
-                <label class="radio-option">
-                    <input
-                        type="radio"
-                        name="mode"
-                        value="duel"
-                    >
-                    Two Player Duel
-                </label>
-
+            <div>
+                <h3>Timer</h3>
+                <span id="timer">5</span>
             </div>
 
-            <div class="menu-section">
-
-                <h3>Difficulty</h3>
-
-                <label class="radio-option">
-                    <input
-                        type="radio"
-                        name="difficulty"
-                        value="easy"
-                        checked
-                    >
-                    Easy
-                </label>
-
-                <label class="radio-option">
-                    <input
-                        type="radio"
-                        name="difficulty"
-                        value="medium"
-                    >
-                    Medium
-                </label>
-
-                <label class="radio-option">
-                    <input
-                        type="radio"
-                        name="difficulty"
-                        value="hard"
-                    >
-                    Hard
-                </label>
-
+            <div>
+                <h3>Player B</h3>
+                <span id="score-b">0</span>
             </div>
 
-            <button id="start-btn">
-                Start Match
+        </div>
+
+        <div class="field">
+
+            <div id="goalkeeper">🧤</div>
+
+            <div id="ball">⚽</div>
+
+        </div>
+
+        <h2 id="message">
+            Take Your Shot
+        </h2>
+
+        <div class="buttons">
+
+            <button id="left-btn">
+                LEFT
+            </button>
+
+            <button id="center-btn">
+                CENTER
+            </button>
+
+            <button id="right-btn">
+                RIGHT
             </button>
 
         </div>
 
-        <!-- GAME SCREEN -->
-        <div id="game-screen" class="hidden">
+    </section>
 
-            <h2 id="player-display">
-                Welcome Striker
-            </h2>
+    <!-- PASS DEVICE -->
+    <section
+        id="pass-screen"
+        class="hidden"
+    >
 
-            <div class="scoreboard">
+        <h1>
+            Pass Device
+        </h1>
 
-                <div>
-                    <h3>Score</h3>
-                    <span id="score">0</span>
-                </div>
+        <h2 id="pass-message"></h2>
 
-                <div>
-                    <h3>Shots Left</h3>
-                    <span id="shots-left">5</span>
-                </div>
+        <button id="continue-btn">
+            Continue
+        </button>
 
-                <div>
-                    <h3>Timer</h3>
-                    <span id="timer">5</span>
-                </div>
+    </section>
 
-            </div>
+    <!-- RESULT -->
+    <section
+        id="result-screen"
+        class="hidden"
+    >
 
-            <h2 id="prompt">
-                Take Your Shot!
-            </h2>
+        <h1 id="result-title"></h1>
 
-            <div class="field">
+        <p id="result-details"></p>
 
-                <div id="goalkeeper">
-                    🧤
-                </div>
+        <button id="next-btn">
+            Next
+        </button>
 
-                <div id="ball">
-                    ⚽
-                </div>
+    </section>
 
-            </div>
+    <!-- FINAL -->
+    <section
+        id="final-screen"
+        class="hidden"
+    >
 
-            <div class="buttons">
+        <h1>
+            Match Complete
+        </h1>
 
-                <button id="left-btn">
-                    Shoot Left
-                </button>
+        <h2 id="winner-text"></h2>
 
-                <button id="center-btn">
-                    Shoot Center
-                </button>
+        <button id="restart-btn">
+            Play Again
+        </button>
 
-                <button id="right-btn">
-                    Shoot Right
-                </button>
+    </section>
 
-            </div>
+</div>
 
-            <h2 id="result"></h2>
-
-        </div>
-
-        <!-- END SCREEN -->
-        <div id="end-screen" class="hidden">
-
-            <h2>
-                Match Complete
-            </h2>
-
-            <p>
-                <strong>Player:</strong>
-                <span id="end-player"></span>
-            </p>
-
-            <p>
-                <strong>Final Score:</strong>
-                <span id="final-score"></span>
-            </p>
-
-            <p>
-                <strong>Accuracy:</strong>
-                <span id="accuracy"></span>
-            </p>
-
-            <p>
-                <strong>Difficulty:</strong>
-                <span id="difficulty-result"></span>
-            </p>
-
-            <p>
-                <strong>Rating:</strong>
-                <span id="rating"></span>
-            </p>
-
-            <button id="restart-btn">
-                Play Again
-            </button>
-
-        </div>
-
-    </div>
-
-    <script src="script.js"></script>
+<script src="script.js"></script>
 
 </body>
-</html>
