@@ -11,24 +11,101 @@
 
     <div class="container">
 
-        <h1>⚽ Penalty Shootout Challenge</h1>
-
-        <!-- Start Screen -->
+        <!-- MAIN MENU -->
         <div id="start-screen">
 
-            <h2>Welcome Striker!</h2>
+            <h1>⚽ Penalty Shootout Challenge</h1>
 
-            <p>
-                Score as many goals as possible from 5 penalty kicks.
-                Choose Left or Right before the timer reaches zero.
+            <p class="subtitle">
+                Test your penalty-taking skills and become the ultimate striker.
             </p>
 
-            <button id="start-btn">Start Game</button>
+            <div class="menu-section">
+
+                <label for="player-name">
+                    Player Name
+                </label>
+
+                <input
+                    type="text"
+                    id="player-name"
+                    placeholder="Enter your name"
+                    maxlength="20"
+                >
+
+            </div>
+
+            <div class="menu-section">
+
+                <h3>Game Mode</h3>
+
+                <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="mode"
+                        value="single"
+                        checked
+                    >
+                    Single Player
+                </label>
+
+                <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="mode"
+                        value="duel"
+                    >
+                    Two Player Duel
+                </label>
+
+            </div>
+
+            <div class="menu-section">
+
+                <h3>Difficulty</h3>
+
+                <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="difficulty"
+                        value="easy"
+                        checked
+                    >
+                    Easy
+                </label>
+
+                <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="difficulty"
+                        value="medium"
+                    >
+                    Medium
+                </label>
+
+                <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="difficulty"
+                        value="hard"
+                    >
+                    Hard
+                </label>
+
+            </div>
+
+            <button id="start-btn">
+                Start Match
+            </button>
 
         </div>
 
-        <!-- Game Screen -->
+        <!-- GAME SCREEN -->
         <div id="game-screen" class="hidden">
+
+            <h2 id="player-display">
+                Welcome Striker
+            </h2>
 
             <div class="scoreboard">
 
@@ -49,20 +126,35 @@
 
             </div>
 
-            <h2 id="prompt">Take Your Shot!</h2>
+            <h2 id="prompt">
+                Take Your Shot!
+            </h2>
 
             <div class="field">
 
-                <div id="goalkeeper">🧤</div>
+                <div id="goalkeeper">
+                    🧤
+                </div>
 
-                <div id="ball">⚽</div>
+                <div id="ball">
+                    ⚽
+                </div>
 
             </div>
 
             <div class="buttons">
 
-                <button id="left-btn">Shoot Left</button>
-                <button id="right-btn">Shoot Right</button>
+                <button id="left-btn">
+                    Shoot Left
+                </button>
+
+                <button id="center-btn">
+                    Shoot Center
+                </button>
+
+                <button id="right-btn">
+                    Shoot Right
+                </button>
 
             </div>
 
@@ -70,18 +162,41 @@
 
         </div>
 
-        <!-- End Screen -->
+        <!-- END SCREEN -->
         <div id="end-screen" class="hidden">
 
-            <h2>Game Over</h2>
+            <h2>
+                Match Complete
+            </h2>
 
-            <p><strong>Final Score:</strong> <span id="final-score"></span></p>
+            <p>
+                <strong>Player:</strong>
+                <span id="end-player"></span>
+            </p>
 
-            <p><strong>Accuracy:</strong> <span id="accuracy"></span></p>
+            <p>
+                <strong>Final Score:</strong>
+                <span id="final-score"></span>
+            </p>
 
-            <p><strong>Rating:</strong> <span id="rating"></span></p>
+            <p>
+                <strong>Accuracy:</strong>
+                <span id="accuracy"></span>
+            </p>
 
-            <button id="restart-btn">Play Again</button>
+            <p>
+                <strong>Difficulty:</strong>
+                <span id="difficulty-result"></span>
+            </p>
+
+            <p>
+                <strong>Rating:</strong>
+                <span id="rating"></span>
+            </p>
+
+            <button id="restart-btn">
+                Play Again
+            </button>
 
         </div>
 
