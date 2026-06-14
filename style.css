@@ -1,1 +1,148 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
+body {
+    font-family: Arial, sans-serif;
+    background: #0d6e32;
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 90%;
+    max-width: 900px;
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 25px;
+}
+
+.hidden {
+    display: none;
+}
+
+#start-screen,
+#game-screen,
+#end-screen {
+    background: rgba(255,255,255,0.1);
+    padding: 30px;
+    border-radius: 15px;
+}
+
+#start-screen p {
+    margin: 20px 0;
+    line-height: 1.6;
+}
+
+.scoreboard {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 25px;
+}
+
+.scoreboard div {
+    background: rgba(255,255,255,0.15);
+    padding: 15px;
+    border-radius: 10px;
+    min-width: 120px;
+}
+
+.scoreboard span {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.field {
+    position: relative;
+    height: 250px;
+    margin: 30px 0;
+    border: 4px solid white;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+#goalkeeper {
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 80px;
+    transition: 0.5s ease;
+}
+
+#ball {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 50px;
+    transition: 0.5s ease;
+}
+
+.buttons {
+    margin-top: 15px;
+}
+
+button {
+    border: none;
+    padding: 12px 24px;
+    margin: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#left-btn {
+    background: #2196f3;
+    color: white;
+}
+
+#right-btn {
+    background: #ff9800;
+    color: white;
+}
+
+#start-btn,
+#restart-btn {
+    background: #28a745;
+    color: white;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+#result {
+    min-height: 40px;
+    margin-top: 20px;
+}
+
+#end-screen p {
+    margin: 15px 0;
+    font-size: 20px;
+}
+
+@media (max-width: 768px) {
+
+    .scoreboard {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .scoreboard div {
+        width: 100%;
+    }
+
+    button {
+        width: 100%;
+        max-width: 300px;
+    }
+}
