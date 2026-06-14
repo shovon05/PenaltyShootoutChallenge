@@ -1,1 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penalty Shootout Challenge</title>
 
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+
+        <h1>⚽ Penalty Shootout Challenge</h1>
+
+        <!-- Start Screen -->
+        <div id="start-screen">
+
+            <h2>Welcome Striker!</h2>
+
+            <p>
+                Score as many goals as possible from 5 penalty kicks.
+                Choose Left or Right before the timer reaches zero.
+            </p>
+
+            <button id="start-btn">Start Game</button>
+
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="hidden">
+
+            <div class="scoreboard">
+
+                <div>
+                    <h3>Score</h3>
+                    <span id="score">0</span>
+                </div>
+
+                <div>
+                    <h3>Shots Left</h3>
+                    <span id="shots-left">5</span>
+                </div>
+
+                <div>
+                    <h3>Timer</h3>
+                    <span id="timer">5</span>
+                </div>
+
+            </div>
+
+            <h2 id="prompt">Take Your Shot!</h2>
+
+            <div class="field">
+
+                <div id="goalkeeper">🧤</div>
+
+                <div id="ball">⚽</div>
+
+            </div>
+
+            <div class="buttons">
+
+                <button id="left-btn">Shoot Left</button>
+                <button id="right-btn">Shoot Right</button>
+
+            </div>
+
+            <h2 id="result"></h2>
+
+        </div>
+
+        <!-- End Screen -->
+        <div id="end-screen" class="hidden">
+
+            <h2>Game Over</h2>
+
+            <p><strong>Final Score:</strong> <span id="final-score"></span></p>
+
+            <p><strong>Accuracy:</strong> <span id="accuracy"></span></p>
+
+            <p><strong>Rating:</strong> <span id="rating"></span></p>
+
+            <button id="restart-btn">Play Again</button>
+
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
