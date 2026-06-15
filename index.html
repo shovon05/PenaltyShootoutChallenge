@@ -505,7 +505,21 @@ button:disabled{cursor:not-allowed;opacity:.38;}
   .ticker{animation:none!important;}
 }
 
-/* ── CONFETTI PARTICLE ───────────────────────────────────────── */
+/* ── ENTER KEY HINT BADGE ────────────────────────────────── */
+.enter-hint{
+  display:inline-block;
+  font-size:.65rem;font-weight:600;letter-spacing:.3px;
+  background:rgba(0,0,0,.25);
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:5px;padding:1px 6px;
+  margin-left:7px;vertical-align:middle;
+  opacity:.65;
+}
+@media(hover:none) and (pointer:coarse){
+  .enter-hint{display:none;}
+}
+
+
 .confetti{
   position:fixed;width:9px;height:9px;border-radius:2px;
   pointer-events:none;z-index:998;
@@ -652,7 +666,7 @@ button:disabled{cursor:not-allowed;opacity:.38;}
     <h1>Pass the Device</h1>
     <h2 id="pass-message"></h2>
     <p class="pass-note">The previous player's choice is hidden.</p>
-    <button id="continue-btn">I'm Ready — Continue</button>
+    <button id="continue-btn">I'm Ready — Continue <span class="enter-hint">↵ Enter</span></button>
   </section>
 
   <!-- ═══ RESULT ══════════════════════════════════════════════ -->
@@ -670,7 +684,7 @@ button:disabled{cursor:not-allowed;opacity:.38;}
         <span class="dir-badge" id="keep-dir"></span>
       </div>
     </div>
-    <button id="next-btn">Next →</button>
+    <button id="next-btn">Next → <span class="enter-hint">↵ Enter</span></button>
   </section>
 
   <!-- ═══ FINAL ════════════════════════════════════════════════ -->
@@ -679,7 +693,7 @@ button:disabled{cursor:not-allowed;opacity:.38;}
     <h2 id="winner-text"></h2>
     <div class="final-stats" id="final-stats"></div>
     <div id="rating-box" class="rating-box hidden"></div>
-    <button id="restart-btn">🔄 Play Again</button>
+    <button id="restart-btn">🔄 Play Again <span class="enter-hint">↵ Enter</span></button>
   </section>
 
 </div><!-- /container -->
@@ -888,10 +902,29 @@ $("dpad-down").addEventListener("click",()=>{}); // blocked — no action on dow
 
 /* Keyboard controls (desktop) */
 document.addEventListener("keydown", e=>{
-  if(gameScreen.classList.contains("hidden")) return;
-  if(["ArrowLeft","KeyA"].some(k=>e.code===k)) handlePlay("left");
-  if(["ArrowRight","KeyD"].some(k=>e.code===k)) handlePlay("right");
-  if(["ArrowUp","KeyW","Space"].some(k=>e.code===k)){ e.preventDefault(); handlePlay("centre"); }
+  // ── GAME SCREEN: shot direction keys ──────────────────────
+  if(!gameScreen.classList.contains("hidden")){
+    if(["ArrowLeft","KeyA"].some(k=>e.code===k)) handlePlay("left");
+    if(["ArrowRight","KeyD"].some(k=>e.code===k)) handlePlay("right");
+    if(["ArrowUp","KeyW","Space"].some(k=>e.code===k)){ e.preventDefault(); handlePlay("centre"); }
+  }
+
+  // ── ENTER key: advance / confirm on any screen ───────────
+  if(e.code === "Enter"){
+    // Don't fire if user is typing in a text input
+    if(document.activeElement && document.activeElement.tagName === "INPUT") return;
+    e.preventDefault();
+
+    if(!resultScreen.classList.contains("hidden")){
+      handleNext();                                   // result → next shot / final
+    } else if(!passScreen.classList.contains("hidden")){
+      startShooterPhase();                            // pass screen → shooter phase
+    } else if(!finalScreen.classList.contains("hidden")){
+      lbRender(); showScreen(menuScreen);             // final → menu
+    } else if(!menuScreen.classList.contains("hidden")){
+      startMatch();                                   // menu → kick off
+    }
+  }
 });
 
 /* ════════════════════════════════════════════════════════════
