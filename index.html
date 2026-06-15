@@ -1,128 +1,1383 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚽ Penalty Shootout Challenge</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>⚽ Penalty Shootout Pro</title>
+<style>
+/* ── RESET ─────────────────────────────────────────────────── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{font-size:16px;-webkit-tap-highlight-color:transparent;}
+
+/* ── CSS VARS ──────────────────────────────────────────────── */
+:root{
+  --g1:#0a5c1a; --g2:#1a8c32; --g3:#2db84e; --g4:#52e87a;
+  --sky1:#0e2236; --sky2:#1a3d5c; --sky3:#3a7ca8;
+  --gold:#f5c842; --gold2:#ffaa00;
+  --red:#e8321c; --red2:#ff6b47;
+  --blue:#1465c8; --blue2:#4da1ff;
+  --white:#ffffff;
+  --dim:rgba(0,0,0,.62);
+  --glass:rgba(255,255,255,.07);
+  --border:rgba(255,255,255,.13);
+  --radius:20px; --radius-sm:12px;
+  --shadow:0 24px 64px rgba(0,0,0,.65);
+}
+
+/* ── BODY / BG ─────────────────────────────────────────────── */
+body{
+  min-height:100dvh;
+  background: radial-gradient(ellipse at 50% 0%, var(--sky2) 0%, var(--sky1) 60%, #040a10 100%);
+  color:var(--white);
+  font-family:'Segoe UI','Arial',sans-serif;
+  overflow-x:hidden;
+  user-select:none;
+  -webkit-user-select:none;
+}
+
+/* ── FLAG TICKER ───────────────────────────────────────────── */
+.ticker-wrap{
+  position:fixed;top:0;left:0;width:100%;z-index:100;
+  overflow:hidden;
+  background:linear-gradient(90deg,#0a0a0a,rgba(10,92,26,.9),#0a0a0a);
+  padding:5px 0;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  pointer-events:none;
+}
+.ticker{display:flex;gap:8px;width:max-content;animation:scrollLeft 70s linear infinite;}
+.flag-item{font-size:1.4rem;flex-shrink:0;line-height:1;}
+@keyframes scrollLeft{0%{transform:translateX(0);}100%{transform:translateX(-33.333%);}}
+
+/* ── CONTAINER ─────────────────────────────────────────────── */
+.container{
+  width:100%;max-width:780px;
+  margin:0 auto;
+  padding:calc(40px + env(safe-area-inset-top)) 18px 80px;
+}
+
+/* ── SCREENS ───────────────────────────────────────────────── */
+.screen{
+  background:var(--glass);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:34px 28px;
+  box-shadow:var(--shadow);
+  animation:fadeIn .3s ease;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+.hidden{display:none!important;}
+
+/* ── TYPOGRAPHY ─────────────────────────────────────────────── */
+h1{text-align:center;font-size:clamp(1.7rem,5vw,2.8rem);margin-bottom:22px;letter-spacing:-.5px;text-shadow:0 2px 12px rgba(0,0,0,.6);}
+h2{text-align:center;font-size:1.3rem;margin-bottom:14px;opacity:.9;}
+h3{font-size:.8rem;text-transform:uppercase;letter-spacing:1.2px;opacity:.6;margin-bottom:7px;margin-top:16px;}
+
+/* ── MENU ───────────────────────────────────────────────────── */
+#menu-screen h1{
+  color:var(--gold);
+  text-shadow:0 0 40px rgba(245,200,66,.4),0 3px 12px rgba(0,0,0,.7);
+}
+.subtitle{text-align:center;opacity:.55;font-size:.9rem;margin-top:-16px;margin-bottom:22px;letter-spacing:.5px;}
+
+input,select{
+  width:100%;padding:12px 15px;margin-bottom:9px;
+  border:1.5px solid var(--border);border-radius:var(--radius-sm);
+  font-size:15px;background:rgba(255,255,255,.09);color:var(--white);
+  outline:none;transition:border-color .2s,background .2s;
+}
+input::placeholder{color:rgba(255,255,255,.38);}
+input:focus,select:focus{border-color:var(--gold);background:rgba(255,255,255,.13);}
+select option{background:#0f1e30;color:var(--white);}
+
+.mode-row{display:flex;gap:9px;margin-bottom:4px;}
+.mode-btn{
+  flex:1;border:2px solid rgba(255,255,255,.18);border-radius:var(--radius-sm);
+  padding:12px 8px;cursor:pointer;font-size:14px;font-weight:700;
+  background:rgba(255,255,255,.06);color:var(--white);transition:all .2s;
+}
+.mode-btn:hover{border-color:var(--gold);}
+.mode-btn.active{background:linear-gradient(135deg,var(--g1),#0d4a15);border-color:var(--g3);color:var(--gold);}
+
+button{
+  border:none;border-radius:var(--radius-sm);padding:12px 18px;
+  cursor:pointer;font-size:15px;font-weight:700;color:var(--white);
+  transition:transform .15s,opacity .2s,box-shadow .2s;
+  position:relative;overflow:hidden;
+}
+button::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.15) 0%,transparent 60%);
+  pointer-events:none;
+}
+button:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4);}
+button:active:not(:disabled){transform:translateY(0);}
+button:disabled{cursor:not-allowed;opacity:.38;}
+
+#start-btn{
+  width:100%;margin-top:16px;font-size:17px;padding:15px;letter-spacing:.5px;
+  background:linear-gradient(135deg,var(--g2),var(--g1));
+  box-shadow:0 0 30px rgba(26,140,50,.3);
+}
+.hint{font-size:.72rem;opacity:.5;font-weight:normal;text-transform:none;letter-spacing:0;}
+
+/* ── SCOREBOARD ─────────────────────────────────────────────── */
+.scoreboard{
+  display:flex;justify-content:space-between;gap:8px;margin-bottom:14px;
+}
+.score-card{
+  flex:1;text-align:center;
+  background:rgba(0,0,0,.35);
+  padding:12px 8px;border-radius:var(--radius-sm);
+  border:1px solid rgba(255,255,255,.09);
+  position:relative;overflow:hidden;
+}
+.score-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,rgba(255,215,0,.5),transparent);
+}
+.score-card h3{margin-top:0;font-size:.7rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.score-num{
+  font-size:2.2rem;font-weight:900;color:var(--gold);display:block;margin-top:3px;
+  text-shadow:0 0 20px rgba(245,200,66,.5);
+  transition:transform .2s;
+}
+.score-num.pop{animation:scorePop .4s cubic-bezier(.17,.89,.32,1.28);}
+@keyframes scorePop{0%{transform:scale(1);}50%{transform:scale(1.5);}100%{transform:scale(1);}}
+.timer-num{color:var(--white)!important;}
+#timer.urgent{color:var(--red)!important;animation:timerPulse .45s infinite alternate;}
+@keyframes timerPulse{from{transform:scale(1);}to{transform:scale(1.3);text-shadow:0 0 20px var(--red);}}
+
+/* ── INFO BAR ───────────────────────────────────────────────── */
+.info-bar{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:.82rem;opacity:.7;margin-bottom:10px;padding:0 2px;flex-wrap:wrap;gap:4px;
+}
+
+/* ── KEYBOARD HINT ──────────────────────────────────────────── */
+.kb-hint{
+  text-align:center;font-size:.72rem;opacity:.42;margin-bottom:6px;
+  letter-spacing:.5px;
+}
+.kb-hint span{
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+  border-radius:4px;padding:1px 6px;margin:0 2px;font-family:monospace;font-size:.78rem;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   3-D STADIUM PITCH
+═══════════════════════════════════════════════════════════ */
+.pitch-wrap{
+  perspective:700px;
+  margin-bottom:14px;
+}
+
+.field{
+  position:relative;
+  height:360px;
+  border-radius:18px;
+  overflow:hidden;
+  transform:rotateX(12deg) scale(1.02);
+  transform-origin:center bottom;
+  box-shadow:
+    0 40px 80px rgba(0,0,0,.7),
+    0 0 0 3px rgba(255,255,255,.18),
+    inset 0 0 120px rgba(0,0,0,.3);
+}
+
+/* Sky gradient */
+.field-sky{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,
+    #0a1628 0%,#162a48 30%,#1e3d64 50%,
+    #1a5e2a 50%,#137023 65%,#0f5e1c 100%
+  );
+}
+
+/* Stadium lights flare */
+.field-sky::before,.field-sky::after{
+  content:'';position:absolute;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,248,200,.18) 0%,transparent 70%);
+  pointer-events:none;
+}
+.field-sky::before{width:120px;height:80px;top:-10px;left:15%;}
+.field-sky::after{width:120px;height:80px;top:-10px;right:15%;}
+
+/* Grass texture stripes */
+.grass-stripes{
+  position:absolute;bottom:0;left:0;right:0;height:52%;
+  background:repeating-linear-gradient(
+    90deg,
+    rgba(255,255,255,.025) 0px,rgba(255,255,255,.025) 52px,
+    transparent 52px,transparent 104px
+  );
+  pointer-events:none;
+}
+
+/* Penalty arc */
+.penalty-arc{
+  position:absolute;
+  bottom:18%;left:50%;transform:translateX(-50%);
+  width:180px;height:60px;
+  border:2px solid rgba(255,255,255,.3);
+  border-bottom:none;
+  border-radius:50% 50% 0 0 / 100% 100% 0 0;
+  pointer-events:none;
+}
+
+/* Penalty spot */
+.penalty-spot{
+  position:absolute;
+  bottom:21%;left:50%;transform:translateX(-50%);
+  width:8px;height:8px;border-radius:50%;
+  background:rgba(255,255,255,.6);
+  pointer-events:none;
+}
+
+/* 3-D GOAL ─────────────────────────────────────────────── */
+.goal-3d{
+  position:absolute;
+  top:6%;left:50%;transform:translateX(-50%);
+  width:70%;
+  pointer-events:none;
+}
+/* Back net */
+.goal-back{
+  position:absolute;
+  top:0;left:0;right:0;
+  height:100px;
+  background:
+    repeating-linear-gradient(90deg,rgba(255,255,255,.12) 0,rgba(255,255,255,.12) 1.5px,transparent 1.5px,transparent 20px),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.12) 0,rgba(255,255,255,.12) 1.5px,transparent 1.5px,transparent 20px);
+  border:2px solid rgba(255,255,255,.3);
+  border-bottom:none;
+  border-radius:4px 4px 0 0;
+}
+/* Top crossbar */
+.goal-cross{
+  position:absolute;
+  top:0;left:-10px;right:-10px;height:10px;
+  background:linear-gradient(180deg,#e0e0e0,#a0a0a0);
+  border-radius:5px;
+  box-shadow:0 3px 10px rgba(0,0,0,.5),0 1px 0 rgba(255,255,255,.4) inset;
+}
+/* Left post */
+.goal-post-l{
+  position:absolute;top:0;left:-10px;
+  width:10px;height:110px;
+  background:linear-gradient(90deg,#c0c0c0,#e8e8e8,#c0c0c0);
+  border-radius:5px 0 0 0;
+  box-shadow:-2px 4px 8px rgba(0,0,0,.4);
+}
+/* Right post */
+.goal-post-r{
+  position:absolute;top:0;right:-10px;
+  width:10px;height:110px;
+  background:linear-gradient(90deg,#c0c0c0,#e8e8e8,#c0c0c0);
+  border-radius:0 5px 0 0;
+  box-shadow:2px 4px 8px rgba(0,0,0,.4);
+}
+/* Ground shadow of posts */
+.goal-base{
+  position:absolute;
+  top:100px;left:-10px;right:-10px;
+  height:8px;
+  background:linear-gradient(180deg,rgba(0,0,0,.4),transparent);
+}
+
+/* ZONES overlaid on back-net for targeting visual */
+.goal-zones{
+  position:absolute;
+  top:0;left:0;right:0;height:100px;
+  display:flex;pointer-events:none;
+  opacity:0;transition:opacity .3s;
+}
+.goal-zones.show{opacity:1;}
+.zone{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;font-weight:700;letter-spacing:.5px;opacity:.7;
+  border-right:1px solid rgba(255,255,255,.15);
+}
+.zone:last-child{border-right:none;}
+.zone.z-left{background:rgba(25,118,210,.25);}
+.zone.z-centre{background:rgba(110,60,170,.25);}
+.zone.z-right{background:rgba(230,80,30,.25);}
+
+/* ── GOALKEEPER ─────────────────────────────────────────────── */
+#goalkeeper{
+  position:absolute;
+  top:8%;left:50%;
+  font-size:68px;line-height:1;
+  transform:translateX(-50%);
+  transition:left .45s cubic-bezier(.25,1.5,.5,1),top .35s ease;
+  z-index:4;
+  filter:drop-shadow(0 8px 16px rgba(0,0,0,.7));
+  will-change:left,top;
+}
+#goalkeeper.dive-left{left:18%!important;}
+#goalkeeper.dive-right{left:82%!important;}
+#goalkeeper.dive-centre{left:50%!important;}
+
+/* ── BALL ────────────────────────────────────────────────────── */
+#ball{
+  position:absolute;
+  bottom:28px;left:50%;
+  font-size:48px;line-height:1;
+  transform:translateX(-50%);
+  transition:left .5s cubic-bezier(.25,1.5,.5,1),
+             bottom .5s ease,
+             transform .5s ease,
+             font-size .5s ease;
+  z-index:5;
+  filter:drop-shadow(0 6px 12px rgba(0,0,0,.8));
+  will-change:left,bottom,transform,font-size;
+}
+#ball.shooting{
+  bottom:150px!important;
+  font-size:28px!important;
+  filter:drop-shadow(0 2px 6px rgba(0,0,0,.5)) blur(.5px);
+}
+
+/* ── MESSAGE ─────────────────────────────────────────────────── */
+#message{
+  text-align:center;font-size:1.45rem;
+  margin:8px 0 12px;font-weight:800;min-height:2.2em;
+  text-shadow:0 2px 8px rgba(0,0,0,.5);
+  transition:opacity .2s;
+}
+
+/* ── ACTION BUTTONS (3-col shot buttons) ─────────────────────── */
+.shot-btns{
+  display:flex;justify-content:center;gap:10px;margin-top:4px;
+}
+.shot-btn{
+  flex:1;padding:13px 8px;font-size:14px;font-weight:800;
+  border-radius:var(--radius-sm);letter-spacing:.4px;
+  border:2px solid transparent;
+  transition:all .15s;
+}
+.shot-btn:hover:not(:disabled){transform:translateY(-3px);}
+#btn-left  {background:linear-gradient(135deg,#0d62c4,#083a7a);border-color:#1a88ff;}
+#btn-centre{background:linear-gradient(135deg,#7c1fa8,#430e60);border-color:#b84eff;}
+#btn-right {background:linear-gradient(135deg,#c44a00,#7a2800);border-color:#ff7a30;}
+
+/* ── MOBILE D-PAD ────────────────────────────────────────────── */
+.dpad-wrap{
+  display:none;
+  flex-direction:column;align-items:center;gap:0;margin-top:10px;
+}
+.dpad-row{display:flex;gap:0;justify-content:center;}
+.dpad-btn{
+  width:64px;height:64px;
+  background:rgba(255,255,255,.1);
+  border:2px solid rgba(255,255,255,.2);
+  border-radius:12px;font-size:1.5rem;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .12s;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+}
+.dpad-btn:active{background:rgba(255,255,255,.25);transform:scale(.92);}
+.dpad-up   {background:rgba(26,140,50,.3);border-color:var(--g3);}
+.dpad-left {background:rgba(13,98,196,.3);border-color:#1a88ff;}
+.dpad-down {background:rgba(200,50,20,.25);border-color:#ff5533;}
+.dpad-right{background:rgba(196,74,0,.3);border-color:#ff7a30;}
+.dpad-center-row .dpad-mid{
+  width:64px;height:64px;
+  background:rgba(124,31,168,.3);border:2px solid #b84eff;
+  border-radius:12px;font-size:1.4rem;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .12s;
+  touch-action:manipulation;
+}
+.dpad-center-row .dpad-mid:active{background:rgba(124,31,168,.6);transform:scale(.92);}
+
+/* show/hide based on pointer */
+@media (hover:none) and (pointer:coarse){
+  .dpad-wrap{display:flex!important;}
+  .shot-btns{display:none!important;}
+  .kb-hint{display:none!important;}
+}
+
+/* ── PASS SCREEN ─────────────────────────────────────────────── */
+#pass-screen{text-align:center;}
+.pass-icon{font-size:4rem;margin-bottom:8px;}
+.pass-note{font-size:.82rem;opacity:.5;margin-top:6px;}
+#continue-btn{
+  background:linear-gradient(135deg,var(--g2),var(--g1));
+  min-width:220px;padding:14px 22px;margin-top:12px;font-size:16px;
+}
+
+/* ── RESULT SCREEN ───────────────────────────────────────────── */
+#result-screen{text-align:center;}
+.result-emoji{font-size:5.5rem;margin-bottom:8px;display:block;animation:popIn .4s cubic-bezier(.17,.89,.32,1.28);}
+@keyframes popIn{0%{transform:scale(.1);opacity:0;}100%{transform:scale(1);opacity:1;}}
+#result-title{font-size:clamp(2rem,6vw,3rem);color:var(--gold);margin-bottom:6px;}
+#result-details{opacity:.72;font-size:.97rem;margin-bottom:18px;}
+.dirs-row{display:flex;justify-content:center;gap:28px;margin-bottom:22px;flex-wrap:wrap;}
+.dir-group{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.dir-lbl{font-size:.7rem;opacity:.55;text-transform:uppercase;letter-spacing:1px;}
+.dir-badge{
+  font-size:.92rem;font-weight:800;padding:5px 18px;border-radius:30px;
+  background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);
+  min-width:82px;text-align:center;
+}
+.dir-badge.left  {background:rgba(20,101,200,.35);border-color:#1a88ff;}
+.dir-badge.centre{background:rgba(110,30,160,.35);border-color:#b84eff;}
+.dir-badge.right {background:rgba(196,70,0,.35);border-color:#ff7a30;}
+#next-btn{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a1000;min-width:180px;font-size:16px;}
+
+/* ── FINAL SCREEN ────────────────────────────────────────────── */
+#final-screen{text-align:center;}
+#winner-text{
+  font-size:1.8rem;color:var(--gold);margin:14px 0 22px;
+  text-shadow:0 0 30px rgba(245,200,66,.5);
+}
+.final-stats{display:flex;justify-content:center;align-items:center;gap:18px;margin-bottom:20px;flex-wrap:wrap;}
+.stat-block{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.stat-val{font-size:2.8rem;font-weight:900;color:var(--blue2);}
+.stat-lbl{font-size:.78rem;opacity:.58;text-transform:uppercase;letter-spacing:1px;}
+.divider-dash{font-size:2rem;opacity:.35;align-self:flex-end;margin-bottom:18px;}
+.rating-box{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  margin-bottom:22px;padding:16px 28px;
+  background:rgba(245,200,66,.1);border:1px solid rgba(245,200,66,.3);
+  border-radius:var(--radius-sm);
+}
+.rating-lbl{font-size:.72rem;opacity:.6;text-transform:uppercase;letter-spacing:1px;}
+.rating-val{font-size:1.5rem;font-weight:800;color:var(--gold);}
+/* Shoot-out meter bar */
+.meter-row{display:flex;gap:6px;justify-content:center;margin:10px 0 18px;}
+.meter-dot{
+  width:28px;height:28px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.25);
+  background:rgba(255,255,255,.08);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.95rem;transition:all .3s;
+}
+.meter-dot.goal{background:rgba(26,140,50,.7);border-color:var(--g3);}
+.meter-dot.miss{background:rgba(200,30,20,.5);border-color:var(--red);}
+#restart-btn{background:linear-gradient(135deg,var(--g2),var(--g1));min-width:200px;padding:14px 28px;font-size:16px;}
+
+/* ── GOAL FLASH OVERLAY ──────────────────────────────────────── */
+#goal-flash{
+  position:fixed;inset:0;z-index:999;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 40%,rgba(245,200,66,.5) 0%,transparent 70%);
+  opacity:0;transition:opacity .15s;
+}
+#goal-flash.show{opacity:1;}
+
+/* ── LEADERBOARD BADGE ───────────────────────────────────────── */
+.lb-section{margin-top:18px;text-align:left;}
+.lb-row{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;border-radius:var(--radius-sm);
+  border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.25);
+  margin-bottom:6px;font-size:.9rem;
+}
+.lb-rank{font-weight:900;color:var(--gold);width:22px;text-align:center;}
+.lb-name{flex:1;font-weight:600;}
+.lb-score{font-size:.85rem;opacity:.7;}
+.lb-accuracy{font-size:.85rem;opacity:.6;}
+
+/* ── RESPONSIVE ─────────────────────────────────────────────── */
+@media(max-width:600px){
+  .container{padding:44px 12px 30px;}
+  .screen{padding:22px 16px;}
+  h1{font-size:1.6rem;}
+  .scoreboard{gap:5px;}
+  .score-num{font-size:1.7rem;}
+  .field{height:300px;}
+  .goal-back{height:80px;}
+  .goal-post-l,.goal-post-r{height:90px;}
+  .goal-base{top:80px;}
+  .goal-zones{height:80px;}
+  .penalty-arc{width:140px;height:48px;bottom:17%;}
+  #goalkeeper{font-size:52px;top:7%;}
+  #ball{font-size:38px;bottom:22px;}
+  .shot-btns{gap:7px;}
+  .dpad-btn,.dpad-center-row .dpad-mid{width:56px;height:56px;}
+  .dirs-row{gap:16px;}
+  .mode-row{flex-direction:column;}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;}
+  .ticker{animation:none!important;}
+}
+
+/* ── CONFETTI PARTICLE ───────────────────────────────────────── */
+.confetti{
+  position:fixed;width:9px;height:9px;border-radius:2px;
+  pointer-events:none;z-index:998;
+  animation:confettiFall var(--dur,1.8s) var(--delay,0s) ease-in forwards;
+}
+@keyframes confettiFall{
+  0%{transform:translateY(-20px) rotate(0deg);opacity:1;}
+  100%{transform:translateY(110vh) rotate(720deg);opacity:0;}
+}
+</style>
 </head>
 <body>
 
-<!-- FIFA 26 Nation Flags Ticker -->
-<div class="flag-ticker-wrap">
-    <div class="flag-ticker" id="flag-ticker"></div>
+<!-- FLASH OVERLAY -->
+<div id="goal-flash"></div>
+
+<!-- FLAG TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker" id="flag-ticker"></div>
 </div>
 
 <div class="container">
 
-    <!-- MENU -->
-    <section id="menu-screen">
+  <!-- ═══ MENU ════════════════════════════════════════════════ -->
+  <section id="menu-screen" class="screen">
+    <h1>⚽ Penalty Shootout Pro</h1>
+    <p class="subtitle">Test your nerve. Beat the keeper.</p>
 
-        <h1>⚽ Penalty Shootout Challenge</h1>
+    <h3>Your Name</h3>
+    <input id="player-name" placeholder="Enter your name…">
 
-        <input id="player-name" placeholder="Your Name" />
+    <h3 id="duel-label" class="hidden">Player Names</h3>
+    <input id="player-a" placeholder="Player A Name" class="hidden">
+    <input id="player-b" placeholder="Player B Name" class="hidden">
 
-        <input id="player-a" placeholder="Player A Name" class="hidden" />
-        <input id="player-b" placeholder="Player B Name" class="hidden" />
+    <h3>Game Mode</h3>
+    <div class="mode-row">
+      <button class="mode-btn active" id="single-mode-btn">⚽ Single Player</button>
+      <button class="mode-btn" id="duel-mode-btn">🆚 Two-Player Duel</button>
+    </div>
 
-        <h3>Game Mode</h3>
+    <h3>Difficulty <span id="diff-hint" class="hint">(governs AI goalkeeper)</span></h3>
+    <select id="difficulty">
+      <option value="easy">🟢 Easy — AI dives randomly</option>
+      <option value="medium" selected>🟡 Medium — AI reads your patterns</option>
+      <option value="hard">🔴 Hard — AI adapts & counters you</option>
+      <option value="pro">🔵 Pro — Expert pattern analysis</option>
+    </select>
 
-        <div class="mode-buttons">
-            <button id="single-mode-btn" class="mode-btn active">⚽ Single Player</button>
-            <button id="duel-mode-btn" class="mode-btn">🆚 Two Player Duel</button>
+    <h3>Shots per Match</h3>
+    <select id="shots-setting">
+      <option value="3">3 shots — Quick fire</option>
+      <option value="5" selected>5 shots — Classic</option>
+      <option value="7">7 shots — Extended</option>
+    </select>
+
+    <button id="start-btn">🚀 Kick Off</button>
+
+    <!-- Leaderboard -->
+    <h3 style="margin-top:22px;">🏆 Top Scores</h3>
+    <div id="leaderboard-display"></div>
+  </section>
+
+  <!-- ═══ GAME ════════════════════════════════════════════════ -->
+  <section id="game-screen" class="screen hidden">
+    <div class="scoreboard">
+      <div class="score-card">
+        <h3 id="label-a">Player</h3>
+        <span class="score-num" id="score-a">0</span>
+      </div>
+      <div class="score-card">
+        <h3>⏱ Time</h3>
+        <span class="score-num timer-num" id="timer">5</span>
+      </div>
+      <div class="score-card">
+        <h3 id="label-b">AI</h3>
+        <span class="score-num" id="score-b">0</span>
+      </div>
+    </div>
+
+    <!-- Shot meter (single player) -->
+    <div class="meter-row" id="shot-meter"></div>
+
+    <div class="info-bar">
+      <span id="role-display"></span>
+      <span id="shots-rem"></span>
+    </div>
+
+    <!-- 3D pitch -->
+    <div class="pitch-wrap">
+      <div class="field">
+        <div class="field-sky"></div>
+        <div class="grass-stripes"></div>
+        <div class="goal-3d" id="goal-3d">
+          <div class="goal-back"></div>
+          <div class="goal-zones" id="goal-zones">
+            <div class="zone z-left">◄</div>
+            <div class="zone z-centre">↑</div>
+            <div class="zone z-right">►</div>
+          </div>
+          <div class="goal-cross"></div>
+          <div class="goal-post-l"></div>
+          <div class="goal-post-r"></div>
+          <div class="goal-base"></div>
         </div>
+        <div class="penalty-arc"></div>
+        <div class="penalty-spot"></div>
+        <div id="goalkeeper">🧤</div>
+        <div id="ball">⚽</div>
+      </div>
+    </div>
 
-        <h3>Difficulty <span id="difficulty-hint" class="hint">(affects AI reaction)</span></h3>
+    <h2 id="message">Take Your Shot!</h2>
 
-        <select id="difficulty">
-            <option value="easy">🟢 Easy — AI guesses randomly</option>
-            <option value="medium" selected>🟡 Medium — AI reads patterns slightly</option>
-            <option value="hard">🔴 Hard — AI tries to outsmart you</option>
-        </select>
+    <!-- Desktop shot buttons -->
+    <div class="kb-hint">
+      <span>◄</span> Left &nbsp;·&nbsp; <span>↑</span> Centre &nbsp;·&nbsp; Right <span>►</span>
+    </div>
+    <div class="shot-btns">
+      <button class="shot-btn" id="btn-left">⬅ LEFT</button>
+      <button class="shot-btn" id="btn-centre">⬆ CENTRE</button>
+      <button class="shot-btn" id="btn-right">RIGHT ➡</button>
+    </div>
 
-        <button id="start-btn">🚀 Start Match</button>
+    <!-- Mobile D-Pad -->
+    <div class="dpad-wrap" id="dpad">
+      <div class="dpad-row">
+        <div class="dpad-btn dpad-up" id="dpad-up">⬆</div>
+      </div>
+      <div class="dpad-row dpad-center-row">
+        <div class="dpad-btn dpad-left" id="dpad-left">⬅</div>
+        <div class="dpad-mid" id="dpad-mid">🎯</div>
+        <div class="dpad-btn dpad-right" id="dpad-right">➡</div>
+      </div>
+      <div class="dpad-row">
+        <div class="dpad-btn dpad-down" id="dpad-down">⬇</div>
+      </div>
+    </div>
+  </section>
 
-    </section>
+  <!-- ═══ PASS DEVICE ═════════════════════════════════════════ -->
+  <section id="pass-screen" class="screen hidden">
+    <div class="pass-icon">📱</div>
+    <h1>Pass the Device</h1>
+    <h2 id="pass-message"></h2>
+    <p class="pass-note">The previous player's choice is hidden.</p>
+    <button id="continue-btn">I'm Ready — Continue</button>
+  </section>
 
-    <!-- GAME -->
-    <section id="game-screen" class="hidden">
+  <!-- ═══ RESULT ══════════════════════════════════════════════ -->
+  <section id="result-screen" class="screen hidden">
+    <span class="result-emoji" id="result-emoji"></span>
+    <h1 id="result-title"></h1>
+    <p id="result-details"></p>
+    <div class="dirs-row">
+      <div class="dir-group">
+        <span class="dir-lbl">Ball went</span>
+        <span class="dir-badge" id="shot-dir"></span>
+      </div>
+      <div class="dir-group">
+        <span class="dir-lbl">Keeper dove</span>
+        <span class="dir-badge" id="keep-dir"></span>
+      </div>
+    </div>
+    <button id="next-btn">Next →</button>
+  </section>
 
-        <div class="scoreboard">
-            <div>
-                <h3 id="label-a">Player A</h3>
-                <span id="score-a">0</span>
-            </div>
-            <div class="timer-block">
-                <h3>⏱ Time</h3>
-                <span id="timer">5</span>
-            </div>
-            <div>
-                <h3 id="label-b">Player B</h3>
-                <span id="score-b">0</span>
-            </div>
-        </div>
+  <!-- ═══ FINAL ════════════════════════════════════════════════ -->
+  <section id="final-screen" class="screen hidden">
+    <h1>Full Time 🏁</h1>
+    <h2 id="winner-text"></h2>
+    <div class="final-stats" id="final-stats"></div>
+    <div id="rating-box" class="rating-box hidden"></div>
+    <button id="restart-btn">🔄 Play Again</button>
+  </section>
 
-        <div class="info-bar">
-            <span id="role-display"></span>
-            <span id="shots-remaining"></span>
-        </div>
+</div><!-- /container -->
 
-        <div class="field">
-            <div class="goal-post"></div>
-            <div id="goalkeeper">🧤</div>
-            <div id="ball">⚽</div>
-        </div>
+<script>
+/* ════════════════════════════════════════════════════════════
+   FLAGS
+════════════════════════════════════════════════════════════ */
+const FLAGS = [
+  "🇦🇱","🇦🇩","🇦🇲","🇦🇹","🇦🇿","🇧🇪","🇧🇦","🇧🇬","🇭🇷","🇨🇾","🇨🇿","🇩🇰",
+  "🇪🇪","🇫🇮","🇫🇷","🇬🇪","🇩🇪","🇬🇷","🇭🇺","🇮🇸","🇮🇪","🇮🇹","🇰🇿","🇱🇻",
+  "🇱🇹","🇱🇺","🇲🇹","🇲🇩","🇲🇪","🇳🇱","🇳🇴","🇵🇱","🇵🇹","🇷🇴","🇷🇸","🇸🇰",
+  "🇸🇮","🇪🇸","🇸🇪","🇨🇭","🇹🇷","🇺🇦","🏴󠁧󠁢󠁥󠁮󠁧󠁿","🏴󠁧󠁢󠁳󠁣󠁴󠁿","🏴󠁧󠁢󠁷󠁬󠁳󠁿",
+  "🇦🇷","🇧🇷","🇨🇱","🇨🇴","🇺🇾","🇺🇸","🇨🇦","🇲🇽","🇨🇷","🇯🇲","🇵🇦","🇹🇹",
+  "🇩🇿","🇨🇲","🇪🇬","🇬🇭","🇰🇪","🇲🇦","🇳🇬","🇸🇳","🇿🇦","🇹🇳","🇺🇬","🇿🇲",
+  "🇯🇵","🇨🇳","🇰🇷","🇮🇷","🇸🇦","🇦🇪","🇶🇦","🇮🇶","🇮🇳","🇹🇭","🇻🇳","🇦🇺","🇳🇿"
+];
+(function buildTicker(){
+  const el = document.getElementById("flag-ticker");
+  const all = [...FLAGS,...FLAGS,...FLAGS];
+  el.innerHTML = all.map(f=>`<span class="flag-item">${f}</span>`).join("");
+})();
 
-        <h2 id="message">Take Your Shot!</h2>
+/* ════════════════════════════════════════════════════════════
+   DOM REFS
+════════════════════════════════════════════════════════════ */
+const $ = id => document.getElementById(id);
+const menuScreen   = $("menu-screen");
+const gameScreen   = $("game-screen");
+const passScreen   = $("pass-screen");
+const resultScreen = $("result-screen");
+const finalScreen  = $("final-screen");
 
-        <div class="buttons">
-            <button id="left-btn">⬅ LEFT</button>
-            <button id="center-btn">⬆ CENTRE</button>
-            <button id="right-btn">RIGHT ➡</button>
-        </div>
+const playerNameInput = $("player-name");
+const playerAInput    = $("player-a");
+const playerBInput    = $("player-b");
+const difficultyEl    = $("difficulty");
+const shotsSetting    = $("shots-setting");
+const labelA          = $("label-a");
+const labelB          = $("label-b");
+const scoreAEl        = $("score-a");
+const scoreBEl        = $("score-b");
+const timerEl         = $("timer");
+const roleDisplay     = $("role-display");
+const shotsRem        = $("shots-rem");
+const messageEl       = $("message");
+const passMessageEl   = $("pass-message");
+const resultEmoji     = $("result-emoji");
+const resultTitle     = $("result-title");
+const resultDetails   = $("result-details");
+const shotDirEl       = $("shot-dir");
+const keepDirEl       = $("keep-dir");
+const winnerText      = $("winner-text");
+const finalStats      = $("final-stats");
+const ratingBox       = $("rating-box");
+const shotMeter       = $("shot-meter");
+const goalFlash       = $("goal-flash");
+const goalZones       = $("goal-zones");
+const goalkeeper      = $("goalkeeper");
+const ball            = $("ball");
 
-    </section>
+/* ════════════════════════════════════════════════════════════
+   GAME STATE
+════════════════════════════════════════════════════════════ */
+let tickInterval = null;
+const DIRS = ["left","centre","right"];
 
-    <!-- PASS DEVICE (Duel only) -->
-    <section id="pass-screen" class="hidden">
-        <div class="pass-content">
-            <div class="pass-icon">📱</div>
-            <h1>Pass the Device</h1>
-            <h2 id="pass-message"></h2>
-            <p class="pass-note">The previous player's choice has been hidden.</p>
-            <button id="continue-btn">I'm Ready — Continue</button>
-        </div>
-    </section>
+const G = {
+  mode: "single",
+  difficulty: "medium",
+  playerA: "Player",
+  playerB: "AI",
+  scoreA: 0,
+  scoreB: 0,
+  shotsTotal: 5,
+  shotsLeft: 5,
+  attempt: 1,
+  totalAttempts: 4,
+  phase: "shooter",          // "shooter" | "keeper"
+  shooterChoice: "",
+  keeperChoice: "",
+  currentShooter: "",
+  currentKeeper: "",
+  timer: 5,
+  history: [],               // per-shot results [{shot,dive,goal}]
+  playerShotHistory: [],     // directions chosen (for AI analysis)
+  keeperZoneHistory: {},     // AI: how often keeper picked each zone
+  consecutiveGoals: 0,       // streak tracking
+  consecutiveMisses: 0,
+  lastShotDir: null,
+};
 
-    <!-- RESULT -->
-    <section id="result-screen" class="hidden">
-        <div class="result-animation" id="result-animation"></div>
-        <h1 id="result-title"></h1>
-        <p id="result-details"></p>
-        <div class="result-dirs">
-            <div>
-                <span class="dir-label">Ball went</span>
-                <span id="shot-dir-display" class="dir-badge"></span>
-            </div>
-            <div>
-                <span class="dir-label">Keeper dove</span>
-                <span id="keep-dir-display" class="dir-badge"></span>
-            </div>
-        </div>
-        <button id="next-btn">Next →</button>
-    </section>
+/* ════════════════════════════════════════════════════════════
+   RATINGS
+════════════════════════════════════════════════════════════ */
+const RATINGS = [
+  {max:0, label:"Better Luck Next Time 😅"},
+  {max:1, label:"Beginner Striker ⚽"},
+  {max:2, label:"Local League Player 🥈"},
+  {max:3, label:"Skilled Finisher 🥇"},
+  {max:4, label:"Elite Striker 🌟"},
+  {max:99,label:"Penalty King 👑"},
+];
+function getRating(goals, total){
+  if(goals === total) return "Penalty King 👑";
+  return RATINGS.find(r => goals <= r.max)?.label ?? "—";
+}
 
-    <!-- FINAL -->
-    <section id="final-screen" class="hidden">
-        <h1>Match Complete 🏁</h1>
-        <h2 id="winner-text"></h2>
-        <div class="final-scores" id="final-scores"></div>
-        <div id="rating-block" class="rating-block hidden"></div>
-        <button id="restart-btn">🔄 Play Again</button>
-    </section>
+/* ════════════════════════════════════════════════════════════
+   LEADERBOARD (localStorage)
+════════════════════════════════════════════════════════════ */
+function lbGet(){ try{return JSON.parse(localStorage.getItem("psc_lb_v3")||"[]");}catch{return [];}}
+function lbSave(data){ try{localStorage.setItem("psc_lb_v3",JSON.stringify(data));}catch{} }
+function lbAdd(name, goals, total){
+  const lb = lbGet();
+  const acc = Math.round(goals/total*100);
+  lb.push({name, goals, total, acc, date: Date.now()});
+  lb.sort((a,b)=>b.goals-a.goals||b.acc-a.acc);
+  lbSave(lb.slice(0,10));
+}
+function lbRender(){
+  const lb = lbGet();
+  const el = $("leaderboard-display");
+  if(!lb.length){ el.innerHTML='<p style="opacity:.4;font-size:.85rem;text-align:center;">No records yet — be the first!</p>'; return; }
+  el.innerHTML = lb.slice(0,5).map((e,i)=>`
+    <div class="lb-row">
+      <span class="lb-rank">${["🥇","🥈","🥉","4","5"][i]}</span>
+      <span class="lb-name">${e.name}</span>
+      <span class="lb-score">${e.goals}/${e.total}</span>
+      <span class="lb-accuracy">${e.acc}%</span>
+    </div>`).join("");
+}
 
-</div>
+/* ════════════════════════════════════════════════════════════
+   SCREEN HELPERS
+════════════════════════════════════════════════════════════ */
+function showScreen(s){
+  [menuScreen,gameScreen,passScreen,resultScreen,finalScreen]
+    .forEach(x=>x.classList.add("hidden"));
+  s.classList.remove("hidden");
+  s.scrollIntoView({block:"start",behavior:"smooth"});
+}
 
-<script src="script.js"></script>
+/* ════════════════════════════════════════════════════════════
+   SHOT METER
+════════════════════════════════════════════════════════════ */
+function buildMeter(){
+  if(G.mode !== "single"){ shotMeter.innerHTML=""; return; }
+  shotMeter.innerHTML = Array.from({length:G.shotsTotal},(_,i)=>
+    `<div class="meter-dot" id="meter-${i}"></div>`
+  ).join("");
+}
+function updateMeter(){
+  if(G.mode !== "single") return;
+  G.history.forEach((h,i)=>{
+    const d = $(`meter-${i}`);
+    if(d){
+      d.classList.remove("goal","miss");
+      d.classList.add(h.goal?"goal":"miss");
+      d.textContent = h.goal?"⚽":"✕";
+    }
+  });
+}
+
+/* ════════════════════════════════════════════════════════════
+   MENU LOGIC
+════════════════════════════════════════════════════════════ */
+$("single-mode-btn").addEventListener("click",()=>{
+  G.mode = "single";
+  $("single-mode-btn").classList.add("active");
+  $("duel-mode-btn").classList.remove("active");
+  playerNameInput.classList.remove("hidden");
+  playerAInput.classList.add("hidden");
+  playerBInput.classList.add("hidden");
+  $("duel-label").classList.add("hidden");
+  $("diff-hint").textContent = "(governs AI goalkeeper)";
+  difficultyEl.parentElement.classList.remove("hidden");
+});
+$("duel-mode-btn").addEventListener("click",()=>{
+  G.mode = "duel";
+  $("duel-mode-btn").classList.add("active");
+  $("single-mode-btn").classList.remove("active");
+  playerNameInput.classList.add("hidden");
+  playerAInput.classList.remove("hidden");
+  playerBInput.classList.remove("hidden");
+  $("duel-label").classList.remove("hidden");
+  $("diff-hint").textContent = "(not used in duel mode)";
+});
+
+$("start-btn").addEventListener("click", startMatch);
+$("continue-btn").addEventListener("click", startShooterPhase);
+$("next-btn").addEventListener("click", handleNext);
+$("restart-btn").addEventListener("click",()=>{ lbRender(); showScreen(menuScreen); });
+
+/* Shot buttons */
+$("btn-left").addEventListener("click",()=>handlePlay("left"));
+$("btn-centre").addEventListener("click",()=>handlePlay("centre"));
+$("btn-right").addEventListener("click",()=>handlePlay("right"));
+
+/* D-Pad */
+$("dpad-left").addEventListener("click",()=>handlePlay("left"));
+$("dpad-up").addEventListener("click",()=>handlePlay("centre"));
+$("dpad-mid").addEventListener("click",()=>handlePlay("centre"));
+$("dpad-right").addEventListener("click",()=>handlePlay("right"));
+$("dpad-down").addEventListener("click",()=>{}); // blocked — no action on down
+
+/* Keyboard controls (desktop) */
+document.addEventListener("keydown", e=>{
+  if(gameScreen.classList.contains("hidden")) return;
+  if(["ArrowLeft","KeyA"].some(k=>e.code===k)) handlePlay("left");
+  if(["ArrowRight","KeyD"].some(k=>e.code===k)) handlePlay("right");
+  if(["ArrowUp","KeyW","Space"].some(k=>e.code===k)){ e.preventDefault(); handlePlay("centre"); }
+});
+
+/* ════════════════════════════════════════════════════════════
+   START MATCH
+════════════════════════════════════════════════════════════ */
+function startMatch(){
+  G.difficulty = difficultyEl.value;
+  G.shotsTotal = parseInt(shotsSetting.value);
+  G.scoreA = G.scoreB = 0;
+  G.attempt = 1;
+  G.shotsLeft = G.shotsTotal;
+  G.playerShotHistory = [];
+  G.history = [];
+  G.consecutiveGoals = G.consecutiveMisses = 0;
+  G.lastShotDir = null;
+  G.keeperZoneHistory = {left:0,centre:0,right:0};
+
+  if(G.mode === "single"){
+    G.playerA = playerNameInput.value.trim() || "Player";
+    G.playerB = "AI";
+    G.totalAttempts = G.shotsTotal;
+  } else {
+    G.playerA = playerAInput.value.trim()  || "Player A";
+    G.playerB = playerBInput.value.trim()  || "Player B";
+    G.totalAttempts = Math.ceil(parseInt(shotsSetting.value)/5*2)*2; // 4 or 8 or 12 etc
+    // Simplified: duel always 4 attempts (2 each)
+    G.totalAttempts = 4;
+  }
+
+  labelA.textContent = G.playerA;
+  labelB.textContent = G.mode === "single" ? "Goals" : G.playerB;
+
+  updateScoreboard();
+  buildMeter();
+
+  if(G.mode === "single") startSingleTurn();
+  else prepareDuelTurn();
+}
+
+/* ════════════════════════════════════════════════════════════
+   SINGLE PLAYER TURN
+════════════════════════════════════════════════════════════ */
+function startSingleTurn(){
+  if(G.shotsLeft <= 0){ finishMatch(); return; }
+  resetField();
+  G.phase = "shooter";
+  G.shooterChoice = "";
+  G.keeperChoice = aiDecide();
+  roleDisplay.textContent = `⚽ You shoot — ${G.playerB} keeps`;
+  shotsRem.textContent    = `Shot ${G.shotsTotal - G.shotsLeft + 1} / ${G.shotsTotal}`;
+  messageEl.textContent   = "Pick your corner!";
+  showScreen(gameScreen);
+  enableButtons(true);
+  startCountdown(7);  // 7 seconds — a bit more breathing room
+}
+
+/* ════════════════════════════════════════════════════════════
+   DUEL TURNS
+════════════════════════════════════════════════════════════ */
+function prepareDuelTurn(){
+  if(G.attempt > G.totalAttempts){ finishMatch(); return; }
+  resetField();
+  G.shooterChoice = G.keeperChoice = "";
+  const aShooter = (G.attempt % 2 !== 0);
+  G.currentShooter = aShooter ? G.playerA : G.playerB;
+  G.currentKeeper  = aShooter ? G.playerB : G.playerA;
+  roleDisplay.textContent = `Keeper: ${G.currentKeeper} — choose secretly!`;
+  shotsRem.textContent    = `Round ${G.attempt} / ${G.totalAttempts}`;
+  G.phase = "keeper";
+  messageEl.textContent = `${G.currentKeeper}: pick your dive!`;
+  showScreen(gameScreen);
+  enableButtons(true);
+  startCountdown(6);
+}
+
+function startShooterPhase(){
+  resetField();
+  G.phase = "shooter";
+  messageEl.textContent = `${G.currentShooter}: shoot!`;
+  roleDisplay.textContent = `Shooter: ${G.currentShooter}`;
+  showScreen(gameScreen);
+  enableButtons(true);
+  startCountdown(7);
+}
+
+/* ════════════════════════════════════════════════════════════
+   INPUT HANDLER
+════════════════════════════════════════════════════════════ */
+function handlePlay(dir){
+  if($("btn-left").disabled && G.phase==="shooter") return; // already locked
+  stopCountdown();
+  enableButtons(false);
+  goalZones.classList.remove("show");
+
+  if(G.phase === "keeper"){
+    G.keeperChoice = dir;
+    showPassScreen();
+  } else {
+    G.shooterChoice = dir;
+    resolveTurn();
+  }
+}
+
+/* ════════════════════════════════════════════════════════════
+   RESOLVE TURN
+════════════════════════════════════════════════════════════ */
+function resolveTurn(){
+  const shot = G.shooterChoice;
+  const dive = G.keeperChoice;
+  const timedOut = shot === "timeout";
+  const isGoal = !timedOut && shot !== dive;
+
+  // Track history
+  if(G.mode==="single" && !timedOut) G.playerShotHistory.push(shot);
+  G.keeperZoneHistory[dive] = (G.keeperZoneHistory[dive]||0)+1;
+  G.lastShotDir = timedOut ? null : shot;
+
+  if(isGoal){ G.consecutiveGoals++; G.consecutiveMisses=0; }
+  else       { G.consecutiveMisses++; G.consecutiveGoals=0; }
+
+  // Animate
+  animatePlay(shot, dive, isGoal);
+
+  setTimeout(()=>{
+    // Update scores
+    if(G.mode==="single"){
+      if(isGoal) G.scoreA++;
+      G.shotsLeft--;
+    } else {
+      const aShooter=(G.attempt%2!==0);
+      if(isGoal){ if(aShooter) G.scoreA++; else G.scoreB++; }
+    }
+
+    G.history.push({shot,dive,goal:isGoal});
+    updateScoreboard();
+    updateMeter();
+
+    // Show result
+    if(timedOut){
+      resultTitle.textContent = "⏰ Time's Up!";
+      resultDetails.textContent = "Too slow — shot wasted.";
+      resultEmoji.textContent = "⏰";
+    } else if(isGoal){
+      resultTitle.textContent = "⚽ GOAL!";
+      resultDetails.textContent = goalPhrase();
+      resultEmoji.textContent = "🎉";
+      triggerGoalFlash();
+      spawnConfetti();
+    } else {
+      resultTitle.textContent = "🧤 SAVED!";
+      resultDetails.textContent = savePhrase();
+      resultEmoji.textContent = "🧤";
+    }
+
+    const labelDir = d => d==="timeout"?"—":d.toUpperCase();
+    shotDirEl.textContent = labelDir(shot);
+    keepDirEl.textContent = labelDir(dive);
+    shotDirEl.className = "dir-badge " + (timedOut?"":shot);
+    keepDirEl.className = "dir-badge " + dive;
+
+    showScreen(resultScreen);
+  }, 950);
+}
+
+/* ════════════════════════════════════════════════════════════
+   FLAVOUR PHRASES
+════════════════════════════════════════════════════════════ */
+const goalPhrases = [
+  "Clinical finish — the keeper had no chance!",
+  "Perfect placement, unstoppable!",
+  "Ice in your veins — right in the corner!",
+  "The crowd goes wild!",
+  "Keeper guessed wrong — textbook penalty!",
+  G.consecutiveGoals > 1 ? "On a streak! Keep going!" : "Composed and lethal.",
+];
+const savePhrases = [
+  "The keeper read you perfectly.",
+  "Good dive — no goal this time.",
+  "The keeper made the right call!",
+  "Denied! Pick a different corner next time.",
+  "The keeper stands tall.",
+];
+function goalPhrase(){ return goalPhrases[Math.floor(Math.random()*goalPhrases.length)]; }
+function savePhrase(){ return savePhrases[Math.floor(Math.random()*savePhrases.length)]; }
+
+/* ════════════════════════════════════════════════════════════
+   NEXT BUTTON
+════════════════════════════════════════════════════════════ */
+function handleNext(){
+  if(G.mode==="single"){
+    if(G.shotsLeft <= 0) finishMatch();
+    else startSingleTurn();
+  } else {
+    G.attempt++;
+    if(G.attempt > G.totalAttempts) finishMatch();
+    else prepareDuelTurn();
+  }
+}
+
+/* ════════════════════════════════════════════════════════════
+   AI GOALKEEPER — mature multi-layer logic
+════════════════════════════════════════════════════════════ */
+function aiDecide(){
+  const hist   = G.playerShotHistory;
+  const diff   = G.difficulty;
+  const total  = hist.length;
+
+  // Always random on easy or no history
+  if(diff === "easy" || total < 2) return rndDir();
+
+  // Build frequency map
+  const freq = {left:0, centre:0, right:0};
+  hist.forEach(d => freq[d]++);
+
+  // Recency-weighted: last 3 shots weigh 2x
+  const recent = hist.slice(-3);
+  recent.forEach(d => freq[d]++);
+
+  // Opposite-of-last tendency: many players change corners
+  const oppLast = G.lastShotDir ? opposite(G.lastShotDir) : null;
+
+  const sorted = Object.entries(freq).sort((a,b)=>b[1]-a[1]);
+  const [most, second] = [sorted[0][0], sorted[1]?.[0]];
+
+  // Pressure logic: if streak of misses, player may panic and pick same spot again
+  if(G.consecutiveMisses >= 2 && diff !== "easy"){
+    // 55% chance keeper stays on their last zone
+    if(Math.random() < .55 && G.keeperZoneHistory){
+      const lastKeeperZone = Object.entries(G.keeperZoneHistory).sort((a,b)=>b[1]-a[1])[0]?.[0];
+      if(lastKeeperZone) return lastKeeperZone;
+    }
+  }
+
+  if(diff === "medium"){
+    const r = Math.random();
+    if(r < .50) return most;
+    if(r < .75 && oppLast) return oppLast;
+    return rndDir();
+  }
+
+  if(diff === "hard"){
+    const r = Math.random();
+    if(r < .60) return most;
+    if(r < .80 && oppLast) return oppLast;
+    if(r < .92) return second || rndDir();
+    return rndDir();
+  }
+
+  if(diff === "pro"){
+    // Markov-style: look at what player shoots after left/centre/right
+    const transitions = buildTransitionMap(hist);
+    if(G.lastShotDir && transitions[G.lastShotDir]){
+      const predicted = maxKey(transitions[G.lastShotDir]);
+      const r = Math.random();
+      if(r < .70) return predicted;
+      if(r < .85) return most;
+    }
+    // Fallback to heavy weighting
+    const r2 = Math.random();
+    if(r2 < .65) return most;
+    if(r2 < .85 && oppLast) return oppLast;
+    return second || rndDir();
+  }
+
+  return rndDir();
+}
+
+function rndDir(){ return DIRS[Math.floor(Math.random()*3)]; }
+function opposite(d){ return d==="left"?"right":d==="right"?"left":"centre"; }
+function maxKey(obj){ return Object.entries(obj).sort((a,b)=>b[1]-a[1])[0]?.[0]; }
+
+function buildTransitionMap(hist){
+  const map = {};
+  for(let i=0;i<hist.length-1;i++){
+    const from=hist[i], to=hist[i+1];
+    if(!map[from]) map[from]={left:0,centre:0,right:0};
+    map[from][to]++;
+  }
+  return map;
+}
+
+/* ════════════════════════════════════════════════════════════
+   PASS SCREEN
+════════════════════════════════════════════════════════════ */
+function showPassScreen(){
+  passMessageEl.textContent = `Now pass to ${G.currentShooter} for the shot!`;
+  showScreen(passScreen);
+}
+
+/* ════════════════════════════════════════════════════════════
+   TIMER
+════════════════════════════════════════════════════════════ */
+function startCountdown(secs){
+  G.timer = secs;
+  timerEl.textContent = G.timer;
+  timerEl.classList.remove("urgent");
+  stopCountdown();
+
+  // Flash zone hints for 1.5 s then hide
+  goalZones.classList.add("show");
+  setTimeout(()=>goalZones.classList.remove("show"), 1500);
+
+  tickInterval = setInterval(()=>{
+    G.timer--;
+    timerEl.textContent = G.timer;
+    if(G.timer <= 2) timerEl.classList.add("urgent");
+    if(G.timer <= 0){
+      stopCountdown();
+      enableButtons(false);
+      if(G.phase === "keeper"){
+        G.keeperChoice = rndDir(); // default
+        showPassScreen();
+      } else {
+        G.shooterChoice = "timeout";
+        resolveTurn();
+      }
+    }
+  }, 1000);
+}
+
+function stopCountdown(){
+  clearInterval(tickInterval);
+  tickInterval = null;
+}
+
+/* ════════════════════════════════════════════════════════════
+   ANIMATION — 3-D AWARE
+════════════════════════════════════════════════════════════ */
+function animatePlay(shot, dive, isGoal){
+  const LEFT_POS   = "20%";
+  const CENTRE_POS = "50%";
+  const RIGHT_POS  = "80%";
+
+  function pos(dir){ return dir==="left"?LEFT_POS:dir==="right"?RIGHT_POS:CENTRE_POS; }
+
+  // Ball forward
+  ball.style.transition  = "left .5s cubic-bezier(.25,1.5,.5,1), bottom .5s ease, font-size .5s ease";
+  ball.style.left   = pos(shot==="timeout"?rndDir():shot);
+  ball.classList.add("shooting");
+
+  // Keeper dive
+  goalkeeper.style.transition = "left .4s cubic-bezier(.25,1.5,.5,1)";
+  goalkeeper.className = "";
+  goalkeeper.style.left = pos(dive);
+
+  // If saved — keeper jumps a little
+  if(!isGoal && shot!=="timeout"){
+    setTimeout(()=>{
+      goalkeeper.style.top = "2%";
+      setTimeout(()=>goalkeeper.style.top="8%", 250);
+    }, 350);
+  }
+}
+
+function resetField(){
+  stopCountdown();
+  ball.style.transition       = "none";
+  goalkeeper.style.transition = "none";
+  ball.style.left             = "50%";
+  ball.style.bottom           = "28px";
+  ball.style.fontSize         = "";
+  ball.classList.remove("shooting");
+  goalkeeper.style.left       = "50%";
+  goalkeeper.style.top        = "8%";
+  goalkeeper.className        = "";
+  timerEl.classList.remove("urgent");
+}
+
+/* ════════════════════════════════════════════════════════════
+   FX
+════════════════════════════════════════════════════════════ */
+function triggerGoalFlash(){
+  goalFlash.classList.add("show");
+  setTimeout(()=>goalFlash.classList.remove("show"), 350);
+}
+
+function spawnConfetti(){
+  const colors = ["#f5c842","#ff4444","#44ff88","#4488ff","#ff88dd","#88ffff"];
+  for(let i=0;i<40;i++){
+    const el = document.createElement("div");
+    el.className = "confetti";
+    el.style.cssText = `
+      left:${Math.random()*100}vw;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      --dur:${1.4+Math.random()*.8}s;
+      --delay:${Math.random()*.4}s;
+      width:${6+Math.random()*7}px;height:${6+Math.random()*7}px;
+      border-radius:${Math.random()>.5?"50%":"2px"};
+    `;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), 2500);
+  }
+}
+
+/* ════════════════════════════════════════════════════════════
+   SCOREBOARD
+════════════════════════════════════════════════════════════ */
+function updateScoreboard(){
+  const prevA = scoreAEl.textContent;
+  const newA  = String(G.scoreA);
+  scoreAEl.textContent = newA;
+  if(prevA !== newA){ scoreAEl.classList.remove("pop"); void scoreAEl.offsetWidth; scoreAEl.classList.add("pop"); }
+
+  if(G.mode === "single"){
+    scoreBEl.textContent = `${G.shotsTotal - G.shotsLeft}/${G.shotsTotal}`;
+  } else {
+    const prevB = scoreBEl.textContent;
+    const newB  = String(G.scoreB);
+    scoreBEl.textContent = newB;
+    if(prevB !== newB){ scoreBEl.classList.remove("pop"); void scoreBEl.offsetWidth; scoreBEl.classList.add("pop"); }
+  }
+}
+
+function enableButtons(on){
+  [$("btn-left"),$("btn-centre"),$("btn-right")].forEach(b=>{
+    b.disabled = !on;
+    b.style.opacity = on?"1":"0.35";
+  });
+  // D-Pad
+  [$("dpad-left"),$("dpad-up"),$("dpad-mid"),$("dpad-right")].forEach(b=>{
+    b.style.opacity = on?"1":"0.35";
+    b.style.pointerEvents = on?"auto":"none";
+  });
+}
+
+/* ════════════════════════════════════════════════════════════
+   FINISH MATCH
+════════════════════════════════════════════════════════════ */
+function finishMatch(){
+  stopCountdown();
+  showScreen(finalScreen);
+
+  if(G.mode === "single"){
+    const goals = G.scoreA;
+    const total = G.shotsTotal;
+    const acc   = Math.round(goals/total*100);
+    const rating = getRating(goals, total);
+
+    lbAdd(G.playerA, goals, total);
+
+    winnerText.textContent = G.playerA;
+    finalStats.innerHTML = `
+      <div class="stat-block">
+        <span class="stat-val">${goals}/${total}</span>
+        <span class="stat-lbl">Goals</span>
+      </div>
+      <div class="stat-block">
+        <span class="stat-val">${acc}%</span>
+        <span class="stat-lbl">Accuracy</span>
+      </div>
+      <div class="stat-block">
+        <span class="stat-val">${G.consecutiveGoals > 1 ? G.consecutiveGoals : G.history.filter(h=>h.goal).length}</span>
+        <span class="stat-lbl">Best Streak</span>
+      </div>
+    `;
+    ratingBox.classList.remove("hidden");
+    ratingBox.innerHTML = `<span class="rating-lbl">Performance Rating</span><span class="rating-val">${rating}</span>`;
+
+    if(goals === total) spawnConfetti();
+  } else {
+    const aWins = G.scoreA > G.scoreB;
+    const bWins = G.scoreB > G.scoreA;
+    if(aWins)       winnerText.textContent = `🏆 ${G.playerA} Wins!`;
+    else if(bWins)  winnerText.textContent = `🏆 ${G.playerB} Wins!`;
+    else            winnerText.textContent = "🤝 It's a Draw!";
+
+    finalStats.innerHTML = `
+      <div class="stat-block">
+        <span class="stat-val">${G.scoreA}</span>
+        <span class="stat-lbl">${G.playerA}</span>
+      </div>
+      <div class="stat-block divider-dash">–</div>
+      <div class="stat-block">
+        <span class="stat-val">${G.scoreB}</span>
+        <span class="stat-lbl">${G.playerB}</span>
+      </div>
+    `;
+    ratingBox.classList.add("hidden");
+    if(aWins||bWins) spawnConfetti();
+  }
+}
+
+/* ════════════════════════════════════════════════════════════
+   BOOT
+════════════════════════════════════════════════════════════ */
+lbRender();
+</script>
 </body>
 </html>
